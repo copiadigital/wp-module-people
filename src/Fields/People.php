@@ -3,7 +3,7 @@
 namespace People\Fields;
 
 use Log1x\AcfComposer\Field;
-use StoutLogic\AcfBuilder\FieldsBuilder;
+use Log1x\AcfComposer\Builder;
 
 class People extends Field
 {
@@ -14,7 +14,7 @@ class People extends Field
      */
     public function fields()
     {
-        $People = new FieldsBuilder('people', [
+        $Fields = Builder::make('people', [
             'title' => 'Fields',
             'menu_order' => 0,
             'position' => 'normal',
@@ -28,10 +28,10 @@ class People extends Field
             'show_in_rest' => 0,
         ]);
 
-        $People
+        $Fields
             ->setLocation('post_type', '==', 'people');
 
-        $People
+        $Fields
             ->addText('position', [
                 'label' => 'Position',
             ])
@@ -59,7 +59,6 @@ class People extends Field
                 'mime_types' => 'jpg, jpeg, png, webp, gif, svg',
             ]);
             
-
-        return $People->build();
+        return $Fields->build();
     }
 }

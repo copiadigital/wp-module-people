@@ -3,7 +3,7 @@
 namespace People\Fields\Partials;
 
 use Log1x\AcfComposer\Partial;
-use StoutLogic\AcfBuilder\FieldsBuilder;
+use Log1x\AcfComposer\Builder;
 
 class People extends Partial
 {
@@ -14,7 +14,7 @@ class People extends Partial
      */
     public function fields()
     {
-        $Fields = new FieldsBuilder('people');
+        $Fields = Builder::make('people');
 
         $Fields
             ->addTaxonomy('groups', [
