@@ -23,14 +23,16 @@ class RegisterPostType implements Provider
             ->setPubliclyQueryable(false)
             ->setMenuPosition(25)
             ->setMenuIcon('dashicons-groups')
-            ->setSupports(['title', 'editor', 'thumbnail', 'revisions'])
+            ->setSupports(['title', 'editor', 'revisions'])
             ->setRewrite([
                 'slug' => 'person',
                 'with_front' => false
             ]),
         );
 
-        array_push($types, CPT::createTaxonomy('people_group', 'people', 'Group'));
+        array_push($types, CPT::createTaxonomy('people_group', 'people', 'Group')
+            ->setPubliclyQueryable(false)
+        );
 
         $types = apply_filters('people_tax_before_insert', $types);
 
