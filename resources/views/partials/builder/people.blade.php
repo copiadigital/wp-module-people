@@ -1,4 +1,10 @@
-<div class="section people">
+@vite(['modules/wp-module-people/resources/scripts/people.js'])
+
+@php
+  $peopleSectionId = 'peopleSection-' . uniqid();
+@endphp
+
+<div class="section people" id="{{ $peopleSectionId }}">
   @if($teams && $peoples)
     <div class="people__nav">
       @foreach ($teams as $team)
@@ -9,8 +15,12 @@
     </div>
     <div class="row js-flex-reorder">
       @foreach($peoples as $person)
+        @php
+          $person_slug = $person['slug'] . '-' . uniqid();
+        @endphp
+
         <div class="col-12 col-md-6 col-lg-4 js-flex-item js-flex-panel" data-teams="{{ $person['teams'] }}">
-          <div role="article" class="collapsed" data-bs-toggle="collapse" data-bs-target="#personDropdown-{{ $person['slug'] }}" aria-expanded="false" aria-controls="personDropdown-{{ $person['slug'] }}">
+          <div role="article" class="collapsed" data-bs-toggle="collapse" data-bs-target="#personDropdown-{{ $person_slug }}" aria-expanded="false" aria-controls="personDropdown-{{ $person_slug }}">
             @if($person['photo'])
               <x-image-progressive
                 width="{{ $person['photo']['width'] }}"
@@ -33,7 +43,7 @@
           </div>
         </div>
         <div class="col-12 js-flex-item js-flex-dropdown">
-          <div class="panel__dropdown collapse" id="personDropdown-{{ $person['slug'] }}" data-bs-parent=".main">
+          <div class="panel__dropdown collapse" id="personDropdown-{{ $person_slug }}" data-bs-parent="#{{ $peopleSectionId }}">
             @if(!empty($person['descriptions']))
               <div class="person__description">
                 {!! $person['descriptions'] !!}
