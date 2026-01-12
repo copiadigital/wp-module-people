@@ -35,23 +35,12 @@ class People extends Field
             ->addText('position', [
                 'label' => 'Position',
             ])
-            ->addText('date_of_birth', [
-                'label' => 'Date of Birth',
-            ])
-            ->addText('appointed_to_board', [
-                'label' => 'Appointed to Board',
-            ])
-            ->addText('appointed_to_position', [
-                'label' => 'Appointed to Position',
-            ])
-            ->addText('joined', [
-                'label' => 'Joined',
-            ])
-            ->addText('positions_and_committees', [
-                'label' => 'Positions and Committees',
-            ])
             ->addWysiwyg('descriptions', [
-                'label' => 'Descriptions',
+                'label' => 'Description',
+                'tabs' => 'all',
+                'toolbar' => 'full',
+                'media_upload' => 1,
+                'delay' => 0,
             ])
             ->addImage('photo', [
                 'label' => 'Photo',

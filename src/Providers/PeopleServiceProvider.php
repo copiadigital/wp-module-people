@@ -15,6 +15,7 @@ class PeopleServiceProvider implements Provider
         return [
             RegisterAssets::class,
             RegisterPostType::class,
+            PeopleOrder::class,
         ];
     }
 
