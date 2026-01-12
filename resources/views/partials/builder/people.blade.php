@@ -1,261 +1,126 @@
-@if($build['style'] === 'plain')
+@php
+  $peopleSectionId = 'peopleSection-' . uniqid();
+@endphp
 
-  @if($peoples)
-    <div class="section people -plain">
-      <div class="row">
-        @foreach($peoples as $person)
-          <div class="col-12 col-md-6 col-lg-3 js-flex-panel people__card" data-teams="{{ $person['teams'] }}">
-            <div class="people__card-wrapper">
-              @if($person['photo'])
-                <div class="people__card-image {{ !empty($person['is_default_photo']) ? 'is-default' : '' }}">
-                  <x-image-plain
-                    width="301"
-                    height="344"
-                    size="full" sizes="{{ $person['photo']['id'] }}"
-                    src="{{ $person['photo']['id'] }}" srcset="{{ $person['photo']['id'] }}"
-                    alt="{{ !empty($person['photo']['alt']) ? $person['photo']['alt'] : App\get_filename($person['photo']['id']) }}"
-                  />
-                </div>
-              @endif
-              @if(!empty($person['title']) || !empty($person['position']))
-                <div class="people__card-content">
-                  @if(!empty($person['title']))
-                    <p class="people__card-title">{!! $person['title'] !!}</p>
-                  @endif
-                  @if(!empty($person['position']))
-                    <p class="people__card-position">{!! $person['position'] !!}</p>
-                  @endif
-                </div>
-              @endif
-            </div>
-          </div>
-        @endforeach
-      </div>
-    @endif
-  </div>
-@else
-  @php
-    // Prepare data for filtering
-    $peopleByTeam = collect($peoples)->groupBy('teams')->toArray();
-    $allOrder = get_option('people_post_order_all', []);
+<div class="section people" id="{{ $peopleSectionId }}"
+  x-data="{
+    activeFilter: '',
+    init() {
+      const links = this.$el.querySelectorAll('.people__nav a[data-filter]');
+      if (!links.length) return;
 
-    // Sort "All" view by custom order if available
-    if (!empty($allOrder)) {
-      $indexed = collect($peoples)->groupBy('ID')->toArray();
-      $peopleForAll = [];
+      // Set first link as active
+      this.activeFilter = links[0].dataset.filter;
 
-      foreach ($allOrder as $personId) {
-        if (isset($indexed[$personId])) {
-          $peopleForAll = array_merge($peopleForAll, $indexed[$personId]);
-          unset($indexed[$personId]);
+      // Initially show only first team's panels
+      this.showPanels();
+
+      // Listen for tab clicks
+      links.forEach(link => {
+        link.addEventListener('click', e => {
+          e.preventDefault();
+          // Set active filter
+          this.activeFilter = link.dataset.filter;
+          this.showPanels();
+        });
+      });
+    },
+    showPanels() {
+      // Hide all main panels and dropdown panels
+      this.$el.querySelectorAll('.js-flex-panel, .js-flex-dropdown').forEach(panel => {
+        panel.style.display = 'none';
+      });
+
+      // Show only main panels for active filter
+      this.$el.querySelectorAll(`.js-flex-panel[data-teams~='${this.activeFilter}']`).forEach(panel => {
+        panel.style.display = '';
+      });
+
+      // Show dropdowns that are children of visible panels if needed
+      this.$el.querySelectorAll(`.js-flex-panel[data-teams~='${this.activeFilter}'] + .js-flex-dropdown`).forEach(dropdown => {
+        dropdown.style.display = '';
+      });
+
+      // Recalculate flex order
+      this.fixFlexOrder();
+
+      // Close any open Bootstrap collapses in hidden dropdowns
+      this.$el.querySelectorAll('.collapse.show').forEach(panel => {
+        if (panel.closest('.js-flex-panel').style.display === 'none') {
+          const bsCollapse = bootstrap.Collapse.getInstance(panel);
+          if (bsCollapse) bsCollapse.hide();
         }
-      }
-
-      foreach ($indexed as $remaining) {
-        $peopleForAll = array_merge($peopleForAll, $remaining);
-      }
-    } else {
-      $peopleForAll = $peoples;
+      });
+    },
+    fixFlexOrder() {
+      const SNAP_LG = 992;
+      const SNAP_SM = 767;
+      const panels = this.$el.querySelectorAll('.js-flex-reorder > .js-flex-panel');
+      let j = 0;
+      panels.forEach(panel => {
+        const dropdown = panel.nextElementSibling;
+        if (panel.style.display === 'none') return;
+        const windowWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        const divisor = windowWidth > SNAP_LG ? 3 : windowWidth < SNAP_SM ? 1 : 2;
+        const rowOrder = Math.ceil((j + 1) / divisor);
+        panel.style.order = rowOrder;
+        panel.classList.add('is-number-' + (j + 1));
+        if (dropdown) dropdown.style.order = rowOrder + 1;
+        j++;
+      });
     }
-  @endphp
-
-  <div class="section people"
-    x-data="{
-      activeFilter: 'all'
-    }"
-  >
-    @if($teams && $peoples)
-      <div class="people__filter">
-        <select class="people__filter-select" aria-label="Filter by team"
-          x-model="activeFilter">
-          <option value="all">All</option>
-          @foreach ($teams as $team)
-            <option value="{{ $team->slug }}">{!! $team->name !!}</option>
-          @endforeach
-        </select>
-      </div>
-
-      {{-- Render "All" view --}}
-      <div class="row" x-show="activeFilter === 'all'">
-        @foreach($peopleForAll as $person)
-          @php
-            $person_slug = $person['slug'] . '-' . uniqid();
-          @endphp
-
-          <div class="col-12 col-md-6 col-lg-3 people__card">
-            <a href="#bs-modal-{{ $person_slug }}" role="button" class="people__card-wrapper link-reset" data-bs-toggle="modal" data-bs-target="#bs-modal-{{ $person_slug }}">
-              @if($person['photo'])
-                <div class="people__card-image {{ !empty($person['is_default_photo']) ? 'is-default' : '' }}">
-                  <x-image-plain
-                    width="301"
-                    height="344"
-                    size="full" sizes="{{ $person['photo']['id'] }}"
-                    src="{{ $person['photo']['id'] }}" srcset="{{ $person['photo']['id'] }}"
-                    alt="{{ !empty($person['photo']['alt']) ? $person['photo']['alt'] : App\get_filename($person['photo']['id']) }}"
-                  />
-                </div>
-              @endif
-              @if(!empty($person['title']) || !empty($person['position']))
-                <div class="people__card-content">
-                  @if(!empty($person['title']))
-                    <p class="people__card-title">{!! $person['title'] !!}</p>
-                  @endif
-                  @if(!empty($person['position']))
-                    <p class="people__card-position">{!! $person['position'] !!}</p>
-                  @endif
-                </div>
-              @endif
-            </a>
-          </div>
-
-          {{-- Person Modal for All view --}}
-          <div class="modal fade people__modal" id="bs-modal-{{ $person_slug }}" tabindex="-1" aria-labelledby="modalLabel-{{ $person_slug }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-xl">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button
-                    type="button"
-                    class="people__modal-close d-none d-lg-inline-flex"
-                    data-bs-dismiss="modal"
-                    aria-label="Close">Close
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <div class="people__modal-content">
-                    <div class="row gx-6">
-                      <div class="col-lg-4">
-                        @if($person['photo'])
-                          <div class="people__modal-image {{ !empty($person['is_default_photo']) ? 'is-default' : '' }}">
-                            <x-image-plain
-                              width="366"
-                              height="418"
-                              size="full" sizes="{{ $person['photo']['id'] }}"
-                              src="{{ $person['photo']['id'] }}" srcset="{{ $person['photo']['id'] }}"
-                              alt="{{ !empty($person['photo']['alt']) ? $person['photo']['alt'] : App\get_filename($person['photo']['id']) }}"
-                            />
-                          </div>
-                        @endif
-                      </div>
-                      <div class="col-lg-8">
-                        @if(!empty($person['title']))
-                          <p class="people__modal-title h4">{!! $person['title'] !!}</p>
-                        @endif
-                        @if(!empty($person['position']))
-                          <p class="people__modal-position text-xl">{!! $person['position'] !!}</p>
-                        @endif
-                        @if(!empty($person['descriptions']))
-                          <div class="person__modal-description">
-                            {!! $person['descriptions'] !!}
-                          </div>
-                        @endif
-                        <button
-                          type="button"
-                          class="people__modal-close people__modal-close--mobile d-inline-flex d-lg-none"
-                          data-bs-dismiss="modal"
-                          aria-label="Close">Close
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        @endforeach
-      </div>
-
-      {{-- Render team-specific views --}}
-      @foreach($teams as $team)
-        <div class="row" x-show="activeFilter === '{{ $team->slug }}'">
-          @if(isset($peopleByTeam[$team->slug]))
-            @foreach($peopleByTeam[$team->slug] as $person)
-              @php
-                $person_slug_team = $person['slug'] . '-' . $team->slug . '-' . uniqid();
-              @endphp
-
-              <div class="col-12 col-md-6 col-lg-3 people__card">
-                <a href="#bs-modal-{{ $person_slug_team }}" role="button" class="people__card-wrapper link-reset" data-bs-toggle="modal" data-bs-target="#bs-modal-{{ $person_slug_team }}">
-                  @if($person['photo'])
-                    <div class="people__card-image {{ !empty($person['is_default_photo']) ? 'is-default' : '' }}">
-                      <x-image-plain
-                        width="301"
-                        height="344"
-                        size="full" sizes="{{ $person['photo']['id'] }}"
-                        src="{{ $person['photo']['id'] }}" srcset="{{ $person['photo']['id'] }}"
-                        alt="{{ !empty($person['photo']['alt']) ? $person['photo']['alt'] : App\get_filename($person['photo']['id']) }}"
-                      />
-                    </div>
-                  @endif
-                  @if(!empty($person['title']) || !empty($person['position']))
-                    <div class="people__card-content">
-                      @if(!empty($person['title']))
-                        <p class="people__card-title">{!! $person['title'] !!}</p>
-                      @endif
-                      @if(!empty($person['position']))
-                        <p class="people__card-position">{!! $person['position'] !!}</p>
-                      @endif
-                    </div>
-                  @endif
-                </a>
-              </div>
-
-              {{-- Person Modal for team view --}}
-              <div class="modal fade people__modal" id="bs-modal-{{ $person_slug_team }}" tabindex="-1" aria-labelledby="modalLabel-{{ $person_slug_team }}" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-xl">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <button
-                        type="button"
-                        class="people__modal-close d-none d-lg-inline-flex"
-                        data-bs-dismiss="modal"
-                        aria-label="Close">Close
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                      <div class="people__modal-content">
-                        <div class="row gx-6">
-                          <div class="col-lg-4">
-                            @if($person['photo'])
-                              <div class="people__modal-image {{ !empty($person['is_default_photo']) ? 'is-default' : '' }}">
-                                <x-image-plain
-                                  width="366"
-                                  height="418"
-                                  size="full" sizes="{{ $person['photo']['id'] }}"
-                                  src="{{ $person['photo']['id'] }}" srcset="{{ $person['photo']['id'] }}"
-                                  alt="{{ !empty($person['photo']['alt']) ? $person['photo']['alt'] : App\get_filename($person['photo']['id']) }}"
-                                />
-                              </div>
-                            @endif
-                          </div>
-                          <div class="col-lg-8">
-                            @if(!empty($person['title']))
-                              <p class="people__modal-title h4">{!! $person['title'] !!}</p>
-                            @endif
-                            @if(!empty($person['position']))
-                              <p class="people__modal-position text-xl">{!! $person['position'] !!}</p>
-                            @endif
-                            @if(!empty($person['descriptions']))
-                              <div class="person__modal-description">
-                                {!! $person['descriptions'] !!}
-                              </div>
-                            @endif
-                            <button
-                              type="button"
-                              class="people__modal-close people__modal-close--mobile d-inline-flex d-lg-none"
-                              data-bs-dismiss="modal"
-                              aria-label="Close">Close
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            @endforeach
-          @endif
+  }"
+  x-init="init()"
+>
+  @if($teams && $peoples)
+    <div class="people__nav">
+      @foreach ($teams as $team)
+        <div class="people__nav-item" role="presentation">
+          <a href="#" class="people__nav-link" data-filter="{{ $team->slug }}"
+            :class="{'active': activeFilter === '{{ $team->slug }}'}">{!! $team->name !!}</a>
         </div>
       @endforeach
-    @endif
-  </div>
-@endif
+    </div>
+
+    <div class="row js-flex-reorder">
+      @foreach($peoples as $person)
+        @php
+          $person_slug = $person['slug'] . '-' . uniqid();
+        @endphp
+
+        <div class="col-12 col-md-6 col-lg-4 js-flex-item js-flex-panel" data-teams="{{ $person['teams'] }}">
+          <div role="article" class="collapsed" data-bs-toggle="collapse" data-bs-target="#personDropdown-{{ $person_slug }}" aria-expanded="false" aria-controls="personDropdown-{{ $person_slug }}">
+            @if($person['photo'])
+              <x-image-progressive
+                width="{{ $person['photo']['width'] }}"
+                height="{{ $person['photo']['height'] }}"
+                size="full" sizes="{{ $person['photo']['id'] }}"
+                src="{{ $person['photo']['id'] }}" srcset="{{ $person['photo']['id'] }}"
+                alt="{{ !empty($person['photo']['alt']) ? $person['photo']['alt'] : App\get_filename($person['photo']['id']) }}"
+              />
+            @endif
+            @if(!empty($person['title']) || !empty($person['position']))
+              <div class="person__content">
+                @if(!empty($person['title']))
+                  <p class="person__title text-primary h5">{!! $person['title'] !!}</p>
+                @endif
+                @if(!empty($person['position']))
+                  <p class="person__position">{!! $person['position'] !!}</p>
+                @endif
+              </div>
+            @endif
+          </div>
+        </div>
+        <div class="col-12 js-flex-item js-flex-dropdown">
+          <div class="panel__dropdown collapse" id="personDropdown-{{ $person_slug }}" data-bs-parent="#{{ $peopleSectionId }}">
+            @if(!empty($person['descriptions']))
+              <div class="person__description">
+                {!! $person['descriptions'] !!}
+              </div>
+            @endif
+          </div>
+        </div>
+      @endforeach
+    </div>
+  @endif
+</div>

@@ -36,18 +36,14 @@ class People extends Field
                 'label' => 'Position',
             ])
             ->addWysiwyg('descriptions', [
-                'label' => 'Description',
-                'tabs' => 'all',
-                'toolbar' => 'full',
-                'media_upload' => 1,
-                'delay' => 0,
+                'label' => 'Descriptions',
             ])
             ->addImage('photo', [
                 'label' => 'Photo',
                 'preview_size' => 'thumbnail',
                 'mime_types' => 'jpg, jpeg, png, webp, gif, svg',
             ]);
-            
+
         return $Fields->build();
     }
 }

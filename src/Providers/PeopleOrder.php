@@ -23,16 +23,9 @@ class PeopleOrder implements Provider
                 isset($_POST['people_order_data'], $_POST['cat_id']) &&
                 check_admin_referer('save_people_order')
             ) {
-                $cat_id = $_POST['cat_id'];
+                $cat_id = intval($_POST['cat_id']);
                 $ids = array_filter(array_map('intval', explode(',', $_POST['people_order_data'])));
-
-                if ($cat_id === 'all') {
-                    update_option('people_post_order_all', $ids);
-                } else {
-                    $cat_id = intval($cat_id);
-                    update_term_meta($cat_id, 'people_post_order', $ids);
-                }
-
+                update_term_meta($cat_id, 'people_post_order', $ids);
                 add_action('admin_notices', function(){
                     echo '<div class="updated"><p>Order saved successfully!</p></div>';
                 });
@@ -52,7 +45,7 @@ class PeopleOrder implements Provider
     }
 
     public function people_order_page() {
-        $selected_cat = isset($_GET['cat_id']) ? $_GET['cat_id'] : '';
+        $selected_cat = isset($_GET['cat_id']) ? intval($_GET['cat_id']) : 0;
         $categories = get_terms([
             'taxonomy' => 'people_group',
             'hide_empty' => false,
@@ -66,7 +59,6 @@ class PeopleOrder implements Provider
                 <label for="cat_id">Select Group:</label>
                 <select name="cat_id" id="cat_id" onchange="this.form.submit()">
                     <option value="">-- Select --</option>
-                    <option value="all" <?php selected($selected_cat, 'all'); ?>>All Groups</option>
                     <?php foreach ($categories as $cat): ?>
                         <option value="<?php echo esc_attr($cat->term_id); ?>" <?php selected($selected_cat, $cat->term_id); ?>>
                             <?php echo esc_html($cat->name); ?>
@@ -76,29 +68,18 @@ class PeopleOrder implements Provider
             </form>
             <?php if ($selected_cat): ?>
                 <?php
-                if ($selected_cat === 'all') {
-                    $saved_order = get_option('people_post_order_all', []);
-                    if (!is_array($saved_order)) $saved_order = [];
+                $saved_order = get_term_meta($selected_cat, 'people_post_order', true);
+                if (!is_array($saved_order)) $saved_order = [];
 
-                    $posts = get_posts([
-                        'post_type' => 'people',
-                        'posts_per_page' => -1,
-                    ]);
-                } else {
-                    $selected_cat = intval($selected_cat);
-                    $saved_order = get_term_meta($selected_cat, 'people_post_order', true);
-                    if (!is_array($saved_order)) $saved_order = [];
-
-                    $posts = get_posts([
-                        'post_type' => 'people',
-                        'posts_per_page' => -1,
-                        'tax_query' => [[
-                            'taxonomy' => 'people_group',
-                            'field'    => 'term_id',
-                            'terms'    => $selected_cat,
-                        ]]
-                    ]);
-                }
+                $posts = get_posts([
+                    'post_type' => 'people',
+                    'posts_per_page' => -1,
+                    'tax_query' => [[
+                        'taxonomy' => 'people_group',
+                        'field'    => 'term_id',
+                        'terms'    => $selected_cat,
+                    ]]
+                ]);
 
                 usort($posts, function($a, $b) use ($saved_order) {
                     $pos_a = array_search($a->ID, $saved_order);
