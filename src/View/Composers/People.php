@@ -20,6 +20,7 @@ class People extends Composer
         return [
             'teams' => $this->getGroups(),
             'peoples' => $this->getPeoples(),
+            'type' => $this->getPartialData('type'),
         ];
     }
 
@@ -79,6 +80,7 @@ class People extends Composer
                         'photo'        => get_field('photo'),
                         'teams'        => $team->slug,
                         'team_id'      => $team->term_id,
+                        'link'         => get_permalink(),
                     ];
                 }
             }

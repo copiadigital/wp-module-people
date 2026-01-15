@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\View;
 use People\Fields\People as PeopleField;
 use People\Fields\Partials\People as PeopleBuilderField;
 use People\View\Composers\People as PeopleComposer;
+use People\View\Composers\PeopleSingle;
 use Log1x\AcfComposer\AcfComposer;
 
 class PeopleServiceProvider implements Provider
@@ -16,6 +17,7 @@ class PeopleServiceProvider implements Provider
             RegisterAssets::class,
             RegisterPostType::class,
             PeopleOrder::class,
+            PeopleSettings::class,
         ];
     }
 
@@ -70,5 +72,24 @@ class PeopleServiceProvider implements Provider
         View::addLocation(dirname(dirname(__DIR__)) . '/resources/views');
 
         View::composer('partials.builder.people', PeopleComposer::class);
+        View::composer('partials.content-single-people', PeopleSingle::class);
+
+        // Include people modal once in footer
+        add_action('wp_footer', [$this, 'renderPeopleModal']);
+    }
+
+    /**
+     * Render the people modal once in footer
+     */
+    public function renderPeopleModal()
+    {
+        static $rendered = false;
+
+        if ($rendered) {
+            return;
+        }
+
+        $rendered = true;
+        echo view('partials.people-modal')->render();
     }
 }

@@ -18,9 +18,11 @@ class RegisterPostType implements Provider
     public function cpt_register() {
         $types = [];
 
+        $isPubliclyQueryable = PeopleSettings::isViewPageEnabled();
+
         array_push($types, CPT::createPostType('people', 'People', 'People')
             ->setPublic(true)
-            ->setPubliclyQueryable(false)
+            ->setPubliclyQueryable($isPubliclyQueryable)
             ->setMenuPosition(25)
             ->setMenuIcon('dashicons-groups')
             ->setSupports(['title', 'editor', 'revisions'])

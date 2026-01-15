@@ -42,6 +42,23 @@ class People extends Field
                 'label' => 'Photo',
                 'preview_size' => 'thumbnail',
                 'mime_types' => 'jpg, jpeg, png, webp, gif, svg',
+            ])
+            ->addRelationship('manual_related_team', [
+                'label' => 'Choose related team',
+                'conditional_logic' => array(
+                    array(
+                        array(
+                            'field' => 'choose_manual_related_team',
+                            'operator' => '==',
+                            'value' => '1',
+                        ),
+                    ),
+                ),
+                'post_type' => ['people'],
+                'filters' => [
+                    0 => 'search',
+                    1 => 'taxonomy',
+                ],
             ]);
 
         return $Fields->build();
