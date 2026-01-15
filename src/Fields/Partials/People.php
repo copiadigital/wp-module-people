@@ -4,6 +4,7 @@ namespace People\Fields\Partials;
 
 use Log1x\AcfComposer\Partial;
 use Log1x\AcfComposer\Builder;
+use People\Providers\PeopleSettings;
 
 class People extends Partial
 {
@@ -16,17 +17,22 @@ class People extends Partial
     {
         $Fields = Builder::make('people');
 
+        $choices = [
+            'tabs' => 'Tabs',
+            'popup' => 'Popup',
+        ];
+
+        if (PeopleSettings::isViewPageEnabled()) {
+            $choices['view-page'] = 'View Page';
+        }
+
         $Fields
             ->addSelect('type', [
                 'label' => 'Type',
                 'wrapper' => array(
                     'width' => '30',
                 ),
-                'choices' => array(
-                    'tabs' => 'Tabs',
-                    'popup' => 'Popup',
-                    'view-page' => 'View Page',
-                ),
+                'choices' => $choices,
                 'default_value' => 'tabs',
                 'allow_null' => 0,
                 'multiple' => 0,
