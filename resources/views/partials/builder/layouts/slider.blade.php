@@ -1,11 +1,15 @@
 <div class="people-slider" x-data="peopleSlider()" x-init="init()">
   @if($peoples)
+    @php $enableViewPage = \People\Providers\PeopleSettings::isViewPageEnabled(); @endphp
     <div class="people-slider__swiper swiper">
       <div class="people-slider__swiper-wrapper swiper-wrapper">
         @foreach($peoples as $key => $person)
           <div class="people-slider__swiper-slide swiper-slide">
             <div class="people__item">
-              <a class="people__item-wrapper link-reset" href="{{ $person['link'] }}" target="_self">
+              <{{ $enableViewPage ? 'a' : 'div' }}
+                class="people__item-wrapper{{ $enableViewPage ? ' link-reset' : '' }}"
+                @if($enableViewPage) href="{{ $person['link'] }}" @endif
+              >
                 @if($person['photo'])
                   <div class="people__photo">
                     <x-image-plain
@@ -26,7 +30,7 @@
                     @endif
                   </div>
                 @endif
-              </a>
+              </{{ $enableViewPage ? 'a' : 'div' }}>
             </div>
           </div>
         @endforeach
