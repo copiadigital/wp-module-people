@@ -28,10 +28,10 @@
         </div>
       </div>
 
-      @if($relatedPeoples)
+      @if($showRelatedMembers && $relatedPeoples)
         <div class="people-single__related">
           <p class="people-single__related-title h2">
-            Meet the other members
+            {!! $relatedMembersTitle !!}
           </p>
           <div class="row">
             @foreach($relatedPeoples as $person)

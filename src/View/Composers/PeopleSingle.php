@@ -3,6 +3,7 @@
 namespace People\View\Composers;
 
 use Roots\Acorn\View\Composer;
+use People\Providers\PeopleSettings;
 use WP_Query;
 
 class PeopleSingle extends Composer
@@ -30,6 +31,8 @@ class PeopleSingle extends Composer
             'position' => get_field('position'),
             'content' => get_field('descriptions'),
             'relatedPeoples' => $this->getRelatedPeoplesByGroup(),
+            'showRelatedMembers' => PeopleSettings::showRelatedMembers(),
+            'relatedMembersTitle' => PeopleSettings::getRelatedMembersTitle(),
         ];
 
         return $args;

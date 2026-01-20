@@ -46,6 +46,8 @@ class PeopleSettings implements Provider
                 'sanitize_callback' => [$this, 'sanitizeOptions'],
                 'default' => [
                     'enable_view_page' => false,
+                    'show_related_members' => true,
+                    'related_members_title' => 'Meet the other members',
                 ],
             ]
         );
@@ -64,6 +66,30 @@ class PeopleSettings implements Provider
             'people-settings',
             'people_general_section'
         );
+
+        // Single Page Settings Section
+        add_settings_section(
+            'people_single_section',
+            __('Single Page Settings', 'theme'),
+            [$this, 'renderSingleSectionDescription'],
+            'people-settings'
+        );
+
+        add_settings_field(
+            'show_related_members',
+            __('Show Related Members', 'theme'),
+            [$this, 'renderShowRelatedMembersField'],
+            'people-settings',
+            'people_single_section'
+        );
+
+        add_settings_field(
+            'related_members_title',
+            __('Related Members Title', 'theme'),
+            [$this, 'renderRelatedMembersTitleField'],
+            'people-settings',
+            'people_single_section'
+        );
     }
 
     /**
@@ -73,6 +99,8 @@ class PeopleSettings implements Provider
     {
         $sanitized = [];
         $sanitized['enable_view_page'] = !empty($input['enable_view_page']);
+        $sanitized['show_related_members'] = !empty($input['show_related_members']);
+        $sanitized['related_members_title'] = sanitize_text_field($input['related_members_title'] ?? 'Meet the other members');
 
         // Flush rewrite rules when this option changes
         $old_options = get_option(self::OPTION_NAME, []);
@@ -89,6 +117,14 @@ class PeopleSettings implements Provider
     public function renderSectionDescription()
     {
         echo '<p>' . __('Configure the People module settings.', 'theme') . '</p>';
+    }
+
+    /**
+     * Render single page section description
+     */
+    public function renderSingleSectionDescription()
+    {
+        echo '<p>' . __('Configure settings for individual people pages.', 'theme') . '</p>';
     }
 
     /**
@@ -109,6 +145,44 @@ class PeopleSettings implements Provider
         </label>
         <p class="description">
             <?php _e('When enabled, each person will have their own viewable page on the frontend.', 'theme'); ?>
+        </p>
+        <?php
+    }
+
+    /**
+     * Render show related members checkbox field
+     */
+    public function renderShowRelatedMembersField()
+    {
+        $options = get_option(self::OPTION_NAME, []);
+        $checked = $options['show_related_members'] ?? true;
+        ?>
+        <label>
+            <input type="checkbox"
+                name="<?php echo esc_attr(self::OPTION_NAME); ?>[show_related_members]"
+                value="1"
+                <?php checked($checked); ?>
+            />
+            <?php _e('Show the "Related Members" section on single people pages', 'theme'); ?>
+        </label>
+        <?php
+    }
+
+    /**
+     * Render related members title text field
+     */
+    public function renderRelatedMembersTitleField()
+    {
+        $options = get_option(self::OPTION_NAME, []);
+        $value = $options['related_members_title'] ?? 'Meet the other members';
+        ?>
+        <input type="text"
+            name="<?php echo esc_attr(self::OPTION_NAME); ?>[related_members_title]"
+            value="<?php echo esc_attr($value); ?>"
+            class="regular-text"
+        />
+        <p class="description">
+            <?php _e('The title displayed above the related members section.', 'theme'); ?>
         </p>
         <?php
     }
@@ -160,5 +234,21 @@ class PeopleSettings implements Provider
     public static function isViewPageEnabled()
     {
         return (bool) self::getOption('enable_view_page', false);
+    }
+
+    /**
+     * Check if related members section should be shown
+     */
+    public static function showRelatedMembers()
+    {
+        return (bool) self::getOption('show_related_members', true);
+    }
+
+    /**
+     * Get the related members section title
+     */
+    public static function getRelatedMembersTitle()
+    {
+        return self::getOption('related_members_title', 'Meet the other members');
     }
 }

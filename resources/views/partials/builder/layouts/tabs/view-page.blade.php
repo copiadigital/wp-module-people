@@ -1,7 +1,6 @@
-<div class="section people"
+<div class="section people people--tabs"
   x-data="{
     activeFilter: '',
-    openPerson: null,
     init() {
       const links = this.$el.querySelectorAll('.people__nav a[data-filter]');
       if (!links.length) return;
@@ -32,18 +31,12 @@
       this.$el.querySelectorAll(`.js-flex-panel[data-teams~='${this.activeFilter}']`).forEach(panel => {
         panel.style.display = '';
       });
-
-      // Close any open person when switching filters
-      this.openPerson = null;
-    },
-    togglePerson(slug) {
-      this.openPerson = this.openPerson === slug ? null : slug;
-    },
+    }
   }"
   x-init="init()"
 >
   @if($teams && $peoples)
-    <div class="people__nav">
+    <div class="people__nav" @if(count($teams) <= 1) style="display: none;" @endif>
       @foreach ($teams as $team)
         <div class="people__nav-item" role="presentation">
           <a href="#" class="people__nav-link" data-filter="{{ $team->slug }}"
@@ -52,16 +45,12 @@
       @endforeach
     </div>
 
-    <div class="row">
+    <div class="row js-flex-reorder">
       @foreach($peoples as $person)
-        @php
-          $person_slug = $person['slug'] . '-' . uniqid();
-        @endphp
-
         <div class="people__item col-12 col-md-6 col-lg-4 js-flex-item js-flex-panel" data-teams="{{ $person['teams'] }}">
           <a class="people__item-wrapper link-reset" href="{{ $person['link'] }}" target="_self">
             @if($person['photo'])
-              <div class="people__photo">
+              <div class="people__image">
                 <x-image-plain
                   fillclass="ratio-16x9"
                   size="full" sizes="{{ $person['photo']['id'] }}"

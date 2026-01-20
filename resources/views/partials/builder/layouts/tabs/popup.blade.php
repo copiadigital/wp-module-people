@@ -1,7 +1,6 @@
-<div class="section people"
+<div class="section people people--tabs"
   x-data="{
     activeFilter: '',
-    openPerson: null,
     init() {
       const links = this.$el.querySelectorAll('.people__nav a[data-filter]');
       if (!links.length) return;
@@ -23,8 +22,8 @@
       });
     },
     showPanels() {
-      // Hide all main panels and dropdown panels
-      this.$el.querySelectorAll('.js-flex-panel, .js-flex-dropdown').forEach(panel => {
+      // Hide all main panels
+      this.$el.querySelectorAll('.js-flex-panel').forEach(panel => {
         panel.style.display = 'none';
       });
 
@@ -32,43 +31,16 @@
       this.$el.querySelectorAll(`.js-flex-panel[data-teams~='${this.activeFilter}']`).forEach(panel => {
         panel.style.display = '';
       });
-
-      // Show dropdowns that are children of visible panels if needed
-      this.$el.querySelectorAll(`.js-flex-panel[data-teams~='${this.activeFilter}'] + .js-flex-dropdown`).forEach(dropdown => {
-        dropdown.style.display = '';
-      });
-
-      // Recalculate flex order
-      this.fixFlexOrder();
-
-      // Close any open person when switching filters
-      this.openPerson = null;
     },
-    togglePerson(slug) {
-      this.openPerson = this.openPerson === slug ? null : slug;
-    },
-    fixFlexOrder() {
-      const SNAP_LG = 992;
-      const SNAP_SM = 767;
-      const panels = this.$el.querySelectorAll('.js-flex-reorder > .js-flex-panel');
-      let j = 0;
-      panels.forEach(panel => {
-        const dropdown = panel.nextElementSibling;
-        if (panel.style.display === 'none') return;
-        const windowWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-        const divisor = windowWidth > SNAP_LG ? 3 : windowWidth < SNAP_SM ? 1 : 2;
-        const rowOrder = Math.ceil((j + 1) / divisor);
-        panel.style.order = rowOrder;
-        panel.classList.add('is-number-' + (j + 1));
-        if (dropdown) dropdown.style.order = rowOrder + 1;
-        j++;
-      });
+    openModal(el) {
+      const data = JSON.parse(el.dataset.person || '{}');
+      this.$dispatch('people-modal-open', data);
     }
   }"
   x-init="init()"
 >
   @if($teams && $peoples)
-    <div class="people__nav">
+    <div class="people__nav" @if(count($teams) <= 1) style="display: none;" @endif>
       @foreach ($teams as $team)
         <div class="people__nav-item" role="presentation">
           <a href="#" class="people__nav-link" data-filter="{{ $team->slug }}"
@@ -81,17 +53,28 @@
       @foreach($peoples as $person)
         @php
           $person_slug = $person['slug'] . '-' . uniqid();
+          $photoHtml = '';
+          if($person['photo']) {
+            $photoHtml = '<div class="ratio-16x9">
+                          <img src="' . wp_get_attachment_image_url($person['photo']['id'], 'full') . '" alt="' . esc_attr(!empty($person['photo']['alt']) ? $person['photo']['alt'] : App\get_filename($person['photo']['id'])) . '" />
+                          </div>';
+          }
+          $personData = [
+            'photo' => $photoHtml,
+            'name' => $person['title'] ?? '',
+            'position' => $person['position'] ?? '',
+            'description' => $person['descriptions'] ?? '',
+          ];
         @endphp
 
         <div class="people__item col-12 col-md-6 col-lg-4 js-flex-item js-flex-panel" data-teams="{{ $person['teams'] }}">
-          <div role="article" class="people__item-wrapper"
-            :class="openPerson === '{{ $person_slug }}' ? '' : 'collapsed'"
-            @click="togglePerson('{{ $person_slug }}')"
-            :aria-expanded="openPerson === '{{ $person_slug }}'"
-            aria-controls="personDropdown-{{ $person_slug }}"
+          <div class="people__item-wrapper people-modal-toggle"
+            data-person='@json($personData)'
+            @click="openModal($el)"
             style="cursor: pointer;">
+
             @if($person['photo'])
-              <div class="people__photo">
+              <div class="people__image">
                 <x-image-plain
                   fillclass="ratio-16x9"
                   size="full" sizes="{{ $person['photo']['id'] }}"
@@ -108,18 +91,6 @@
                 @if(!empty($person['position']))
                   <p class="people__position">{!! $person['position'] !!}</p>
                 @endif
-              </div>
-            @endif
-          </div>
-        </div>
-        <div class="col-12 js-flex-item js-flex-dropdown">
-          <div class="panel__dropdown"
-            id="personDropdown-{{ $person_slug }}"
-            x-show="openPerson === '{{ $person_slug }}'"
-            x-collapse>
-            @if(!empty($person['descriptions']))
-              <div class="people__description">
-                {!! $person['descriptions'] !!}
               </div>
             @endif
           </div>
