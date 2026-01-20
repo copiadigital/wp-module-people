@@ -18,9 +18,8 @@ class People extends Partial
         $Fields = Builder::make('people');
 
         $choices = [
-            'tabs' => 'Tabs',
+            'collapse' => 'Collapse',
             'popup' => 'Popup',
-            'slider' => 'Slider',
         ];
 
         if (PeopleSettings::isViewPageEnabled()) {
@@ -28,10 +27,27 @@ class People extends Partial
         }
 
         $Fields
+            ->addSelect('style', [
+                'label' => 'Style',
+                'wrapper' => array(
+                    'width' => '50',
+                ),
+                'choices' => [
+                    'grid' => 'Grid',
+                    'tabs' => 'Tabs',
+                    'slider' => 'Slider',
+                ],
+                'default_value' => 'tabs',
+                'allow_null' => 0,
+                'multiple' => 0,
+                'ui' => 0,
+                'return_format' => 'value',
+                'ajax' => 0,
+            ])
             ->addSelect('type', [
                 'label' => 'Type',
                 'wrapper' => array(
-                    'width' => '30',
+                    'width' => '50',
                 ),
                 'choices' => $choices,
                 'default_value' => 'tabs',
@@ -44,12 +60,12 @@ class People extends Partial
             ->addTaxonomy('groups', [
                 'label' => 'Show people from',
                 'wrapper' => array(
-                    'width' => '70',
+                    'width' => '50',
                 ),
                 'conditional_logic' => array(
                     array(
                         array(
-                            'field' => 'type',
+                            'field' => 'style',
                             'operator' => '!=',
                             'value' => 'slider',
                         ),
@@ -62,13 +78,13 @@ class People extends Partial
             ->addRadio('show_people_based_on', [
                 'label' => 'Show people based on',
                 'wrapper' => array(
-                    'width' => '70',
+                    'width' => '50',
                 ),
                 'required' => 1,
                 'conditional_logic' => array(
                     array(
                         array(
-                            'field' => 'type',
+                            'field' => 'style',
                             'operator' => '==',
                             'value' => 'slider',
                         ),
@@ -87,7 +103,7 @@ class People extends Partial
                 'conditional_logic' => array(
                     array(
                         array(
-                            'field' => 'type',
+                            'field' => 'style',
                             'operator' => '==',
                             'value' => 'slider',
                         ),

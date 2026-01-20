@@ -20,6 +20,7 @@ class People extends Composer
         return [
             'teams' => $this->getGroups(),
             'peoples' => $this->getPeoples(),
+            'style' => $this->getPartialData('style'),
             'type' => $this->getPartialData('type'),
         ];
     }
@@ -54,7 +55,7 @@ class People extends Composer
         global $post;
         $peoples = [];
 
-        if ($this->getPartialData('type') !== 'slider') {
+        if ($this->getPartialData('style') !== 'slider') {
             $args = [
                 'post_type'      => 'people',
                 'posts_per_page' => -1,
