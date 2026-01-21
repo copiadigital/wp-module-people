@@ -20,6 +20,8 @@ class People extends Composer
         return [
             'teams' => $this->getGroups(),
             'peoples' => $this->getPeoples(),
+            'style' => $this->getPartialData('style'),
+            'type' => $this->getPartialData('type'),
         ];
     }
 
@@ -51,71 +53,109 @@ class People extends Composer
     private function getPeoples(): array
     {
         global $post;
-
-        $args = [
-            'post_type'      => 'people',
-            'posts_per_page' => -1,
-            'post_status'    => 'publish',
-        ];
-
         $peoples = [];
-        $query = new WP_Query($args);
 
-        if ($query->have_posts()) {
-            $unsorted = [];
+        if ($this->getPartialData('style') !== 'slider') {
+            $args = [
+                'post_type'      => 'people',
+                'posts_per_page' => -1,
+                'post_status'    => 'publish',
+            ];
 
-            while ($query->have_posts()) {
-                $query->the_post();
+            $query = new WP_Query($args);
 
-                $person_teams = wp_get_post_terms($post->ID, 'people_group');
+            if ($query->have_posts()) {
+                $unsorted = [];
 
-                foreach ($person_teams as $team) {
-                    $unsorted[] = [
-                        'ID'           => get_the_ID(),
-                        'slug'         => $post->post_name . '-' . $team->slug,
-                        'title'        => get_the_title(),
-                        'position'     => get_field('position'),
-                        'descriptions' => get_field('descriptions'),
-                        'photo'        => get_field('photo'),
-                        'teams'        => $team->slug,
-                        'team_id'      => $team->term_id,
-                    ];
+                while ($query->have_posts()) {
+                    $query->the_post();
+
+                    $person_teams = wp_get_post_terms($post->ID, 'people_group');
+
+                    foreach ($person_teams as $team) {
+                        $unsorted[] = [
+                            'ID'           => get_the_ID(),
+                            'slug'         => $post->post_name . '-' . $team->slug,
+                            'title'        => get_the_title(),
+                            'position'     => get_field('position'),
+                            'descriptions' => get_field('descriptions'),
+                            'photo'        => get_field('photo'),
+                            'teams'        => $team->slug,
+                            'team_id'      => $team->term_id,
+                            'link'         => get_permalink(),
+                        ];
+                    }
                 }
-            }
 
-            wp_reset_postdata();
+                wp_reset_postdata();
 
-            // Sort by group-specific people_post_order
-            $sorted = [];
-            $groups = get_terms([
-                'taxonomy' => 'people_group',
-                'hide_empty' => false,
-            ]);
+                // Sort by group-specific people_post_order
+                $sorted = [];
+                $groups = get_terms([
+                    'taxonomy' => 'people_group',
+                    'hide_empty' => false,
+                ]);
 
-            foreach ($groups as $group) {
-                $order = get_term_meta($group->term_id, 'people_post_order', true);
-                if (!is_array($order)) $order = [];
+                foreach ($groups as $group) {
+                    $order = get_term_meta($group->term_id, 'people_post_order', true);
+                    if (!is_array($order)) $order = [];
 
-                foreach ($order as $person_id) {
-                    foreach ($unsorted as $index => $person) {
-                        // Match person ID AND the group
-                        if ($person['ID'] === $person_id && $person['team_id'] === $group->term_id) {
-                            $sorted[] = $person;
-                            unset($unsorted[$index]); // remove to avoid duplicates
+                    foreach ($order as $person_id) {
+                        foreach ($unsorted as $index => $person) {
+                            // Match person ID AND the group
+                            if ($person['ID'] === $person_id && $person['team_id'] === $group->term_id) {
+                                $sorted[] = $person;
+                                unset($unsorted[$index]); // remove to avoid duplicates
+                            }
                         }
                     }
                 }
+
+                // Add any remaining people (not ordered)
+                foreach ($unsorted as $person) {
+                    $sorted[] = $person;
+                }
+
+                $peoples = $sorted;
             }
+        }else {
+            $getPeoplesBased = $this->getPartialData('show_people_based_on');
 
-            // Add any remaining people (not ordered)
-            foreach ($unsorted as $person) {
-                $sorted[] = $person;
+            if($getPeoplesBased === 'manual_posts') {
+                foreach($this->getPartialData('manual_posts') as $item) {
+                    $peoples[] = [
+                        'title'        => get_the_title($item->ID),
+                        'position'     => get_field('position', $item->ID),
+                        'photo'        => get_field('photo', $item->ID),
+                        'link'         => get_permalink($item->ID),
+                    ];
+                }
+            }else {
+                $args = array(
+                    'post_type' => 'people',
+                    'posts_per_page' => -1,
+                    'post_status' => 'publish',
+                );
+
+                $query = new WP_Query($args);
+                if ($query->have_posts()) {
+                    while ($query->have_posts()) {
+                        $query->the_post();
+
+                        $peoples[] = [
+                            'title'        => get_the_title(),
+                            'position'     => get_field('position'),
+                            'photo'        => get_field('photo'),
+                            'link'         => get_permalink(),
+                        ];
+                    }
+
+                    wp_reset_postdata();
+                }
             }
-
-            $peoples = $sorted;
-
-            return $peoples;
         }
+
+        return $peoples;
     }
 
 
