@@ -23,7 +23,7 @@
                 @if(!empty($person['title']) || !empty($person['position']))
                   <div class="people__content">
                     @if(!empty($person['title']))
-                      <p class="people__title text-primary h5">{!! $person['title'] !!}</p>
+                      <p class="people__title tw-text-h5">{!! $person['title'] !!}</p>
                     @endif
                     @if(!empty($person['position']))
                       <p class="people__position">{!! $person['position'] !!}</p>
@@ -46,74 +46,76 @@
   @endif
 </div>
 
-<script>
-  document.addEventListener('alpine:init', () => {
-    Alpine.data('peopleSlider', () => ({
-      swiper: null,
-      init() {
-        if (!window.Swiper || !window.SwiperModules) return;
+@once
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('peopleSlider', () => ({
+        swiper: null,
+        init() {
+          if (!window.Swiper || !window.SwiperModules) return;
 
-        const container = this.$el;
+          const container = this.$el;
 
-        this.swiper = new Swiper(container.querySelector('.swiper'), {
-          modules: [window.SwiperModules.Navigation, window.SwiperModules.Scrollbar],
-          spaceBetween: 48,
-          slidesPerView: 4,
-          loop: false,
-          autoHeight: false,
-          scrollbar: {
-            el: container.querySelector('.swiper-pagination'),
-            draggable: true,
-          },
-          navigation: {
-            nextEl: container.querySelector('.swiper-buttons .swiper-button-next'),
-            prevEl: container.querySelector('.swiper-buttons .swiper-button-prev'),
-            addIcons: false,
-          },
-          breakpoints: {
-            320: {
-              spaceBetween: 48,
-              slidesPerView: 1,
+          this.swiper = new Swiper(container.querySelector('.swiper'), {
+            modules: [window.SwiperModules.Navigation, window.SwiperModules.Scrollbar],
+            spaceBetween: 48,
+            slidesPerView: 4,
+            loop: false,
+            autoHeight: false,
+            scrollbar: {
+              el: container.querySelector('.swiper-pagination'),
+              draggable: true,
             },
-            768: {
-              spaceBetween: 48,
-              slidesPerView: 2,
+            navigation: {
+              nextEl: container.querySelector('.swiper-buttons .swiper-button-next'),
+              prevEl: container.querySelector('.swiper-buttons .swiper-button-prev'),
+              addIcons: false,
             },
-            1200: {
-              spaceBetween: 48,
-              slidesPerView: 3,
+            breakpoints: {
+              320: {
+                spaceBetween: 48,
+                slidesPerView: 1,
+              },
+              768: {
+                spaceBetween: 48,
+                slidesPerView: 2,
+              },
+              1200: {
+                spaceBetween: 48,
+                slidesPerView: 3,
+              },
             },
-          },
-          on: {
-            sliderMove: function () {
-              document.querySelectorAll('.people-slider').forEach(function (el) {
-                const swiperEl = el.querySelector('.swiper');
-                if (swiperEl) swiperEl.style.pointerEvents = 'none';
-              });
-            },
-            slideChangeTransitionEnd: function () {
-              document.querySelectorAll('.people-slider').forEach(function (el) {
-                const swiperEl = el.querySelector('.swiper');
-                if (swiperEl) swiperEl.style.pointerEvents = 'unset';
-              });
-            },
-            touchEnd: function () {
-              setTimeout(() => {
+            on: {
+              sliderMove: function () {
+                document.querySelectorAll('.people-slider').forEach(function (el) {
+                  const swiperEl = el.querySelector('.swiper');
+                  if (swiperEl) swiperEl.style.pointerEvents = 'none';
+                });
+              },
+              slideChangeTransitionEnd: function () {
                 document.querySelectorAll('.people-slider').forEach(function (el) {
                   const swiperEl = el.querySelector('.swiper');
                   if (swiperEl) swiperEl.style.pointerEvents = 'unset';
                 });
-              }, 400);
+              },
+              touchEnd: function () {
+                setTimeout(() => {
+                  document.querySelectorAll('.people-slider').forEach(function (el) {
+                    const swiperEl = el.querySelector('.swiper');
+                    if (swiperEl) swiperEl.style.pointerEvents = 'unset';
+                  });
+                }, 400);
+              },
             },
-          },
-        });
-
-        if (this.swiper.slides.length <= this.swiper.params.slidesPerView) {
-          container.querySelectorAll('.swiper-buttons').forEach(function (el) {
-            el.style.setProperty('display', 'none', 'important');
           });
+
+          if (this.swiper.slides.length <= this.swiper.params.slidesPerView) {
+            container.querySelectorAll('.swiper-buttons').forEach(function (el) {
+              el.style.setProperty('display', 'none', 'important');
+            });
+          }
         }
-      }
-    }));
-  });
-</script>
+      }));
+    });
+  </script>
+@endonce

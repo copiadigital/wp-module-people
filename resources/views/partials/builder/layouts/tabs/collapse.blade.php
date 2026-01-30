@@ -1,4 +1,4 @@
-<div class="section people people--tabs"
+<div class="section people people--tabs tw-py-40 md:tw-py-100"
   x-data="{
     activeFilter: '',
     openPerson: null,
@@ -68,22 +68,22 @@
   x-init="init()"
 >
   @if($teams && $peoples)
-    <div class="people__nav" @if(count($teams) <= 1) style="display: none;" @endif>
+    <div class="people__nav tw-border-b-0 tw-mb-40 tw-list-none tw-pl-0 md:tw-flex" @if(count($teams) <= 1) style="display: none;" @endif>
       @foreach ($teams as $team)
-        <div class="people__nav-item" role="presentation">
-          <a href="#" class="people__nav-link" data-filter="{{ $team->slug }}"
-            :class="{'active': activeFilter === '{{ $team->slug }}'}">{!! $team->name !!}</a>
+        <div class="people__nav-item tw-mb-20 tw-grow tw-text-center tw-border-b tw-border-grey-dark md:tw-mb-0" role="presentation">
+          <a href="#" class="people__nav-link tw-block tw-py-30 tw-border-b-4 tw-cursor-pointer tw-no-underline hover:tw-border-current focus:tw-border-current {{ $loop->first ? 'tw-border-primary' : 'tw-border-transparent' }}" data-filter="{{ $team->slug }}"
+            :class="activeFilter === '{{ $team->slug }}' ? 'active tw-border-primary' : 'tw-border-transparent'">{!! $team->name !!}</a>
         </div>
       @endforeach
     </div>
 
-    <div class="row js-flex-reorder">
+    <div class="tw-flex tw-flex-wrap -tw-mx-30 js-flex-reorder">
       @foreach($peoples as $person)
         @php
           $person_slug = $person['slug'] . '-' . uniqid();
         @endphp
 
-        <div class="people__item col-12 col-md-6 col-lg-4 js-flex-item js-flex-panel" data-teams="{{ $person['teams'] }}">
+        <div class="people__item tw-w-full md:tw-w-1/2 lg:tw-w-1/3 tw-px-30 tw-mb-40 js-flex-item js-flex-panel" data-teams="{{ $person['teams'] }}">
           <div role="article" class="people__item-wrapper"
             :class="openPerson === '{{ $person_slug }}' ? '' : 'collapsed'"
             @click="togglePerson('{{ $person_slug }}')"
@@ -93,7 +93,7 @@
             @if($person['photo'])
               <div class="people__image">
                 <x-image-plain
-                  fillclass="ratio-16x9"
+                  fillclass="tw-aspect-[16/9]"
                   size="full" sizes="{{ $person['photo']['id'] }}"
                   src="{{ $person['photo']['id'] }}" srcset="{{ $person['photo']['id'] }}"
                   alt="{{ !empty($person['photo']['alt']) ? $person['photo']['alt'] : App\get_filename($person['photo']['id']) }}"
@@ -103,7 +103,7 @@
             @if(!empty($person['title']) || !empty($person['position']))
               <div class="people__content">
                 @if(!empty($person['title']))
-                  <p class="people__title text-primary h5">{!! $person['title'] !!}</p>
+                  <p class="people__title tw-text-h5">{!! $person['title'] !!}</p>
                 @endif
                 @if(!empty($person['position']))
                   <p class="people__position">{!! $person['position'] !!}</p>
@@ -112,16 +112,18 @@
             @endif
           </div>
         </div>
-        <div class="col-12 js-flex-item js-flex-dropdown">
-          <div class="panel__dropdown"
+        <div class="tw-w-full tw-px-30 js-flex-item js-flex-dropdown">
+          <div class="panel__dropdown tw-overflow-hidden"
             id="personDropdown-{{ $person_slug }}"
             x-show="openPerson === '{{ $person_slug }}'"
-            x-collapse>
-            @if(!empty($person['descriptions']))
-              <div class="people__description">
-                {!! $person['descriptions'] !!}
-              </div>
-            @endif
+            x-collapse.duration.300ms>
+            <div class="tw-mb-40">
+              @if(!empty($person['descriptions']))
+                <div class="people__description">
+                  {!! $person['descriptions'] !!}
+                </div>
+              @endif
+            </div>
           </div>
         </div>
       @endforeach
