@@ -9,9 +9,9 @@
         <div class="people__group tw-mb-60">
           <h2 class="people__group-title tw-mb-30">{!! $team->name !!}</h2>
 
-          <div class="tw-flex tw-flex-wrap -tw-mx-30">
+          <div class="tw-flex tw-flex-wrap -tw-mx-20">
             @foreach($teamPeoples as $person)
-              <div class="people__item tw-w-full md:tw-w-1/2 lg:tw-w-1/3 tw-px-30 tw-mb-40">
+              <div class="people__item tw-w-full md:tw-w-1/2 lg:tw-w-1/3 tw-px-20 tw-mb-40">
                 <a class="people__item-wrapper link-reset" href="{{ $person['link'] }}" target="_self">
                   @if($person['photo'])
                     <div class="people__image">

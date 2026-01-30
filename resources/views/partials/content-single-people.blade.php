@@ -1,7 +1,7 @@
 <div class="people-single tw-mt-[calc(var(--header-height-mobile)+1.875rem)] tw-mb-50 md:tw-mt-[calc(var(--header-height)+3.125rem)]">
   <div class="people-single__wrapper">
-    <div class="people-single__row tw-flex tw-flex-wrap -tw-mx-30">
-      <div class="people-single__column tw-w-full md:tw-w-1/3 tw-px-30">
+    <div class="people-single__row tw-flex tw-flex-wrap -tw-mx-20">
+      <div class="people-single__column tw-w-full md:tw-w-1/3 tw-px-20">
         @if($photo)
           <div class="people-single__image">
             <x-image-plain
@@ -13,7 +13,7 @@
           </div>
         @endif
       </div>
-      <div class="people-single__column tw-w-full md:tw-w-1/2 md:tw-ml-[8.333333%] tw-px-30">
+      <div class="people-single__column tw-w-full md:tw-w-1/2 md:tw-ml-[8.333333%] tw-px-20">
         @if(!empty($title) || !empty($position))
           <div class="people-single__header">
             @if(!empty($title))
@@ -32,9 +32,9 @@
         <p class="people-single__related-title tw-text-h2 tw-mb-30">
           {!! $relatedMembersTitle !!}
         </p>
-        <div class="tw-flex tw-flex-wrap -tw-mx-30">
+        <div class="tw-flex tw-flex-wrap -tw-mx-20">
           @foreach($relatedPeoples as $person)
-            <div class="people__item tw-w-full md:tw-w-1/2 lg:tw-w-1/3 tw-px-30">
+            <div class="people__item tw-w-full md:tw-w-1/2 lg:tw-w-1/3 tw-px-20">
               <a class="people__item-wrapper link-reset" href="{{ $person['link'] }}" target="_self">
                 @if($person['photo'])
                   <div class="people__photo">

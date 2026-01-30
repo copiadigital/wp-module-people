@@ -73,11 +73,11 @@
           </button>
           <div class="people-modal__body tw-bg-white tw-py-80 tw-px-40 tw-pb-50">
             <div class="people-modal__body-wrapper">
-              <div class="tw-flex tw-flex-wrap -tw-mx-30">
-                <div class="tw-w-full md:tw-w-1/3 tw-px-30">
+              <div class="tw-flex tw-flex-wrap -tw-mx-20">
+                <div class="tw-w-full md:tw-w-1/3 tw-px-20">
                   <div class="people-modal__photo" x-html="modalData.photo"></div>
                 </div>
-                <div class="tw-w-full md:tw-w-2/3 tw-px-30">
+                <div class="tw-w-full md:tw-w-2/3 tw-px-20">
                   <div class="people-modal__info last-of-type">
                     <h2 class="people-modal__name" x-text="modalData.name"></h2>
                     <p class="people-modal__position" x-text="modalData.position"></p>

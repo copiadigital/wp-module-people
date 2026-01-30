@@ -40,13 +40,13 @@
         <div class="people__group tw-mb-60">
           <h2 class="people__group-title tw-mb-30">{!! $team->name !!}</h2>
 
-          <div class="tw-flex tw-flex-wrap -tw-mx-30 js-flex-reorder">
+          <div class="tw-flex tw-flex-wrap -tw-mx-20 js-flex-reorder">
             @foreach($teamPeoples as $person)
               @php
                 $person_slug = $person['slug'] . '-' . uniqid();
               @endphp
 
-              <div class="people__item tw-w-full md:tw-w-1/2 lg:tw-w-1/3 tw-px-30 tw-mb-40 js-flex-item js-flex-panel">
+              <div class="people__item tw-w-full md:tw-w-1/2 lg:tw-w-1/3 tw-px-20 tw-mb-40 js-flex-item js-flex-panel">
                 <div role="article" class="people__item-wrapper"
                   :class="openPerson === '{{ $person_slug }}' ? '' : 'collapsed'"
                   @click="togglePerson('{{ $person_slug }}')"
@@ -78,7 +78,7 @@
                 </div>
               </div>
 
-              <div class="tw-w-full tw-px-30 js-flex-item js-flex-dropdown">
+              <div class="tw-w-full tw-px-20 js-flex-item js-flex-dropdown">
                 <div class="panel__dropdown tw-overflow-hidden"
                   id="personDropdown-{{ $person_slug }}"
                   x-show="openPerson === '{{ $person_slug }}'"

@@ -45,9 +45,9 @@
       @endforeach
     </div>
 
-    <div class="tw-flex tw-flex-wrap -tw-mx-30 js-flex-reorder">
+    <div class="tw-flex tw-flex-wrap -tw-mx-20 js-flex-reorder">
       @foreach($peoples as $person)
-        <div class="people__item tw-w-full md:tw-w-1/2 lg:tw-w-1/3 tw-px-30 tw-mb-40 js-flex-item js-flex-panel" data-teams="{{ $person['teams'] }}">
+        <div class="people__item tw-w-full md:tw-w-1/2 lg:tw-w-1/3 tw-px-20 tw-mb-40 js-flex-item js-flex-panel" data-teams="{{ $person['teams'] }}">
           <a class="people__item-wrapper link-reset" href="{{ $person['link'] }}" target="_self">
             @if($person['photo'])
               <div class="people__image">
