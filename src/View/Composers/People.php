@@ -21,7 +21,9 @@ class People extends Composer
             'teams' => $this->getGroups(),
             'peoples' => $this->getPeoples(),
             'style' => $this->getPartialData('style'),
-            'type' => $this->getPartialData('type'),
+            'type' => $this->getPartialData('style') === 'slider'
+                ? $this->getPartialData('slider_type')
+                : $this->getPartialData('type'),
         ];
     }
 
@@ -126,6 +128,7 @@ class People extends Composer
                     $peoples[] = [
                         'title'        => get_the_title($item->ID),
                         'position'     => get_field('position', $item->ID),
+                        'descriptions' => get_field('descriptions', $item->ID),
                         'photo'        => get_field('photo', $item->ID),
                         'link'         => get_permalink($item->ID),
                     ];
@@ -145,6 +148,7 @@ class People extends Composer
                         $peoples[] = [
                             'title'        => get_the_title(),
                             'position'     => get_field('position'),
+                            'descriptions' => get_field('descriptions'),
                             'photo'        => get_field('photo'),
                             'link'         => get_permalink(),
                         ];

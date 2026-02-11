@@ -17,13 +17,21 @@ class People extends Partial
     {
         $Fields = Builder::make('people');
 
-        $choices = [
+        $gridTabsChoices = [
             'collapse' => 'Collapse',
             'popup' => 'Popup',
         ];
 
         if (PeopleSettings::isViewPageEnabled()) {
-            $choices['view-page'] = 'View Page';
+            $gridTabsChoices['view-page'] = 'View Page';
+        }
+
+        $sliderChoices = [
+            'popup' => 'Popup',
+        ];
+
+        if (PeopleSettings::isViewPageEnabled()) {
+            $sliderChoices['view-page'] = 'View Page';
         }
 
         $Fields
@@ -49,8 +57,39 @@ class People extends Partial
                 'wrapper' => array(
                     'width' => '50',
                 ),
-                'choices' => $choices,
-                'default_value' => 'tabs',
+                'conditional_logic' => array(
+                    array(
+                        array(
+                            'field' => 'style',
+                            'operator' => '!=',
+                            'value' => 'slider',
+                        ),
+                    ),
+                ),
+                'choices' => $gridTabsChoices,
+                'default_value' => 'collapse',
+                'allow_null' => 0,
+                'multiple' => 0,
+                'ui' => 0,
+                'return_format' => 'value',
+                'ajax' => 0,
+            ])
+            ->addSelect('slider_type', [
+                'label' => 'Type',
+                'wrapper' => array(
+                    'width' => '50',
+                ),
+                'conditional_logic' => array(
+                    array(
+                        array(
+                            'field' => 'style',
+                            'operator' => '==',
+                            'value' => 'slider',
+                        ),
+                    ),
+                ),
+                'choices' => $sliderChoices,
+                'default_value' => 'popup',
                 'allow_null' => 0,
                 'multiple' => 0,
                 'ui' => 0,
