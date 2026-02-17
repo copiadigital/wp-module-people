@@ -78,10 +78,10 @@
                   <div class="people-modal__photo" x-html="modalData.photo"></div>
                 </div>
                 <div class="tw-w-full md:tw-w-2/3 tw-px-20">
-                  <div class="people-modal__info last-of-type">
+                  <div class="people-modal__info [&>*:last-child]:!tw-mb-0">
                     <h2 class="people-modal__name" x-text="modalData.name"></h2>
                     <p class="people-modal__position" x-text="modalData.position"></p>
-                    <div class="people-modal__description last-of-type" x-html="modalData.description"></div>
+                    <div class="people-modal__description [&>*:last-child]:!tw-mb-0" x-html="modalData.description"></div>
                   </div>
                 </div>
               </div>
