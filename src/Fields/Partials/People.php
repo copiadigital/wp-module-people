@@ -112,6 +112,7 @@ class People extends Partial
                 ),
                 'taxonomy' => 'people_group',
                 'field_type' => 'checkbox',
+                'add_term' => 0,
                 'return_format' => 'object',
             ])
             ->addRadio('show_people_based_on', [
