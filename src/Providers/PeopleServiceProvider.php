@@ -14,7 +14,6 @@ class PeopleServiceProvider implements Provider
     protected function providers()
     {
         return [
-            RegisterAssets::class,
             RegisterPostType::class,
             PeopleOrder::class,
             PeopleSettings::class,
