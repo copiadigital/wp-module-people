@@ -41,7 +41,7 @@
 
                   @if($person['photo'])
                     <div class="people__image">
-                      <x-image-plain
+                      <x-picture-plain
                         fillclass="tw-aspect-[16/9]"
                         size="full" sizes="{{ $person['photo']['id'] }}"
                         src="{{ $person['photo']['id'] }}" srcset="{{ $person['photo']['id'] }}"
