@@ -29,13 +29,13 @@
   {{-- Backdrop --}}
   <div
     x-show="modalOpen"
-    x-transition:enter="tw-transition tw-ease-out tw-duration-300"
-    x-transition:enter-start="tw-opacity-0"
-    x-transition:enter-end="tw-opacity-100"
-    x-transition:leave="tw-transition tw-ease-in tw-duration-200"
-    x-transition:leave-start="tw-opacity-100"
-    x-transition:leave-end="tw-opacity-0"
-    class="people-modal__backdrop tw-fixed tw-inset-0 tw-z-40 tw-backdrop-blur-sm"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="people-modal__backdrop fixed inset-0 z-40 backdrop-blur-sm"
     @click="closeModal()"
     aria-hidden="true"
   ></div>
@@ -43,24 +43,24 @@
   {{-- Modal Dialog --}}
   <div
     x-show="modalOpen"
-    x-transition:enter="tw-transition tw-ease-out tw-duration-300"
-    x-transition:enter-start="tw-opacity-0 tw-translate-y-[1rem] sm:tw-translate-y-0 sm:tw-scale-95"
-    x-transition:enter-end="tw-opacity-100 tw-translate-y-0 sm:tw-scale-100"
-    x-transition:leave="tw-transition tw-ease-in tw-duration-200"
-    x-transition:leave-start="tw-opacity-100 tw-translate-y-0 sm:tw-scale-100"
-    x-transition:leave-end="tw-opacity-0 tw-translate-y-[1rem] sm:tw-translate-y-0 sm:tw-scale-95"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0 translate-y-[1rem] sm:translate-y-0 sm:scale-95"
+    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+    x-transition:leave-end="opacity-0 translate-y-[1rem] sm:translate-y-0 sm:scale-95"
     x-cloak
-    class="people-modal__container tw-fixed tw-inset-0 tw-z-50 tw-overflow-y-auto"
+    class="people-modal__container fixed inset-0 z-50 overflow-y-auto"
     role="dialog"
     aria-modal="true"
   >
-    <div class="tw-flex tw-min-h-full tw-items-center tw-justify-center tw-p-[1rem] tw-text-center sm:tw-p-0">
+    <div class="flex min-h-full items-center justify-center p-[1rem] text-center sm:p-0">
       <div
-        class="people-modal__dialog tw-relative tw-w-full tw-max-w-[900px] tw-transform md:tw-max-w-[732px] lg:tw-max-w-[832px] xl:tw-max-w-[1024px] 2xl:tw-max-w-[1389px]"
+        class="people-modal__dialog relative w-full max-w-[900px] transform md:max-w-[732px] lg:max-w-[832px] xl:max-w-[1024px] 2xl:max-w-[1389px]"
         @click.stop
       >
-        <div class="people-modal__content tw-relative">
-          <button class="people-modal-close btn-reset tw-absolute tw-top-0 tw-right-0 tw-z-10" aria-label="Close" @click="closeModal()">
+        <div class="people-modal__content relative">
+          <button class="people-modal-close btn-reset absolute top-0 right-0 z-10" aria-label="Close" @click="closeModal()">
             <svg width="53" height="55" viewBox="0 0 53 55" fill="none" xmlns="http://www.w3.org/2000/svg">
               <mask id="path-1-inside-1_2774_7392" fill="white">
               <path d="M0.885254 0H52.1602V54.9321H0.885254V0Z"/>
@@ -71,17 +71,17 @@
               <rect x="37.71" y="18.6661" width="28.3959" height="3.64593" transform="rotate(135 37.71 18.6661)" fill="white"/>
             </svg>
           </button>
-          <div class="people-modal__body tw-bg-white tw-py-80 tw-px-40 tw-pb-50">
+          <div class="people-modal__body bg-white py-80 px-40 pb-50">
             <div class="people-modal__body-wrapper">
-              <div class="tw-flex tw-flex-wrap -tw-mx-20">
-                <div class="tw-w-full md:tw-w-1/3 tw-px-20">
+              <div class="flex flex-wrap -mx-20">
+                <div class="w-full md:w-1/3 px-20">
                   <div class="people-modal__photo" x-html="modalData.photo"></div>
                 </div>
-                <div class="tw-w-full md:tw-w-2/3 tw-px-20">
-                  <div class="people-modal__info [&>*:last-child]:!tw-mb-0">
+                <div class="w-full md:w-2/3 px-20">
+                  <div class="people-modal__info [&>*:last-child]:!mb-0">
                     <h2 class="people-modal__name" x-text="modalData.name"></h2>
                     <p class="people-modal__position" x-text="modalData.position"></p>
-                    <div class="people-modal__description [&>*:last-child]:!tw-mb-0" x-html="modalData.description"></div>
+                    <div class="people-modal__description [&>*:last-child]:!mb-0" x-html="modalData.description"></div>
                   </div>
                 </div>
               </div>

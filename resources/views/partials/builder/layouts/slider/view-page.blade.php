@@ -1,15 +1,15 @@
 <div class="people-slider" x-data="peopleSlider()" x-init="init()">
   @if($peoples)
-    <div class="swiper tw-mt-30 md:tw-mt-60 md:tw-overflow-hidden">
+    <div class="swiper mt-30 md:mt-60 md:overflow-hidden">
       <div class="swiper-wrapper">
         @foreach($peoples as $key => $person)
-          <div class="swiper-slide tw-h-auto">
+          <div class="swiper-slide h-auto">
             <div class="people__item">
               <a class="people__item-wrapper link-reset" href="{{ $person['link'] }}">
                 @if($person['photo'])
                   <div class="people__photo">
                     <x-picture-plain
-                      fillclass="tw-aspect-[16/9]"
+                      fillclass="aspect-[16/9]"
                       size="full" sizes="{{ $person['photo']['id'] }}"
                       src="{{ $person['photo']['id'] }}" srcset="{{ $person['photo']['id'] }}"
                       alt="{{ !empty($person['photo']['alt']) ? $person['photo']['alt'] : App\get_filename($person['photo']['id']) }}"
@@ -19,7 +19,7 @@
                 @if(!empty($person['title']) || !empty($person['position']))
                   <div class="people__content">
                     @if(!empty($person['title']))
-                      <p class="people__title tw-text-h5">{!! $person['title'] !!}</p>
+                      <p class="people__title text-h5">{!! $person['title'] !!}</p>
                     @endif
                     @if(!empty($person['position']))
                       <p class="people__position">{!! $person['position'] !!}</p>
@@ -32,11 +32,11 @@
         @endforeach
       </div>
     </div>
-    <div class="swiper-footer tw-flex tw-items-center tw-mt-60">
-      <div class="swiper-pagination tw-flex tw-items-center tw-h-[2px] tw-flex-1 tw-bg-grey tw-mr-20 md:tw-mr-50"></div>
-      <div class="swiper-buttons tw-flex tw-flex-wrap tw-shrink-0">
-        <div class="swiper-button swiper-button-prev tw-cursor-pointer tw-relative tw-flex tw-items-center tw-justify-center tw-bg-primary tw-w-[50px] tw-h-[50px] md:tw-w-[60px] md:tw-h-[60px] xl:hover:tw-bg-secondary tw-mr-[0.375rem]"></div>
-        <div class="swiper-button swiper-button-next tw-cursor-pointer tw-relative tw-flex tw-items-center tw-justify-center tw-bg-primary tw-w-[50px] tw-h-[50px] md:tw-w-[60px] md:tw-h-[60px] xl:hover:tw-bg-secondary"></div>
+    <div class="swiper-footer flex items-center mt-60">
+      <div class="swiper-pagination flex items-center h-[2px] flex-1 bg-grey mr-20 md:mr-50"></div>
+      <div class="swiper-buttons flex flex-wrap shrink-0">
+        <div class="swiper-button swiper-button-prev cursor-pointer relative flex items-center justify-center bg-primary w-[50px] h-[50px] md:w-[60px] md:h-[60px] xl:hover:bg-secondary mr-[0.375rem]"></div>
+        <div class="swiper-button swiper-button-next cursor-pointer relative flex items-center justify-center bg-primary w-[50px] h-[50px] md:w-[60px] md:h-[60px] xl:hover:bg-secondary"></div>
       </div>
     </div>
   @endif

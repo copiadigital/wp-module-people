@@ -1,4 +1,4 @@
-<div class="section people people--grid tw-py-40 md:tw-py-100"
+<div class="section people people--grid py-40 md:py-100"
   x-data="{
     openPerson: null,
     togglePerson(slug) {
@@ -37,16 +37,16 @@
       @endphp
 
       @if(count($teamPeoples) > 0)
-        <div class="people__group tw-mb-60">
-          <h2 class="people__group-title tw-mb-30">{!! $team->name !!}</h2>
+        <div class="people__group mb-60">
+          <h2 class="people__group-title mb-30">{!! $team->name !!}</h2>
 
-          <div class="tw-flex tw-flex-wrap -tw-mx-20 js-flex-reorder">
+          <div class="flex flex-wrap -mx-20 js-flex-reorder">
             @foreach($teamPeoples as $person)
               @php
                 $person_slug = $person['slug'] . '-' . uniqid();
               @endphp
 
-              <div class="people__item tw-w-full md:tw-w-1/2 lg:tw-w-1/3 tw-px-20 tw-mb-40 js-flex-item js-flex-panel">
+              <div class="people__item w-full md:w-1/2 lg:w-1/3 px-20 mb-40 js-flex-item js-flex-panel">
                 <div role="article" class="people__item-wrapper"
                   :class="openPerson === '{{ $person_slug }}' ? '' : 'collapsed'"
                   @click="togglePerson('{{ $person_slug }}')"
@@ -57,7 +57,7 @@
                   @if($person['photo'])
                     <div class="people__image">
                       <x-picture-plain
-                        fillclass="tw-aspect-[16/9]"
+                        fillclass="aspect-[16/9]"
                         size="full" sizes="{{ $person['photo']['id'] }}"
                         src="{{ $person['photo']['id'] }}" srcset="{{ $person['photo']['id'] }}"
                         alt="{{ !empty($person['photo']['alt']) ? $person['photo']['alt'] : App\get_filename($person['photo']['id']) }}"
@@ -68,7 +68,7 @@
                   @if(!empty($person['title']) || !empty($person['position']))
                     <div class="people__content">
                       @if(!empty($person['title']))
-                        <p class="people__title tw-text-h5">{!! $person['title'] !!}</p>
+                        <p class="people__title text-h5">{!! $person['title'] !!}</p>
                       @endif
                       @if(!empty($person['position']))
                         <p class="people__position">{!! $person['position'] !!}</p>
@@ -78,12 +78,12 @@
                 </div>
               </div>
 
-              <div class="tw-w-full tw-px-20 js-flex-item js-flex-dropdown">
-                <div class="panel__dropdown tw-overflow-hidden"
+              <div class="w-full px-20 js-flex-item js-flex-dropdown">
+                <div class="panel__dropdown overflow-hidden"
                   id="personDropdown-{{ $person_slug }}"
                   x-show="openPerson === '{{ $person_slug }}'"
                   x-collapse.duration.300ms>
-                  <div class="tw-mb-40">
+                  <div class="mb-40">
                     @if(!empty($person['descriptions']))
                       <div class="people__description">
                         {!! $person['descriptions'] !!}
