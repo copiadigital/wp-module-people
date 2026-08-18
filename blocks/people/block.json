@@ -1,0 +1,55 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "theme/people",
+  "title": "People",
+  "category": "other",
+  "icon": "groups",
+  "description": "Listing of people, shown as a grid, tabs or slider.",
+  "keywords": [
+    "people",
+    "team",
+    "staff",
+    "profiles"
+  ],
+  "supports": {
+    "html": false,
+    "anchor": true,
+    "className": true,
+    "reusable": false,
+    "multiple": true
+  },
+  "attributes": {
+    "style": {
+      "type": "string",
+      "default": "tabs"
+    },
+    "type": {
+      "type": "string",
+      "default": "collapse"
+    },
+    "sliderType": {
+      "type": "string",
+      "default": "popup"
+    },
+    "groups": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "number"
+      }
+    },
+    "showPeopleBasedOn": {
+      "type": "string",
+      "default": "default"
+    },
+    "manualPosts": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "number"
+      }
+    }
+  },
+  "textdomain": "sage"
+}

@@ -85,7 +85,7 @@
                   x-collapse.duration.300ms>
                   <div class="mb-40">
                     @if(!empty($person['descriptions']))
-                      <div class="people__description">
+                      <div class="people__description prose">
                         {!! $person['descriptions'] !!}
                       </div>
                     @endif

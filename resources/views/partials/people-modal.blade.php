@@ -54,7 +54,7 @@
     role="dialog"
     aria-modal="true"
   >
-    <div class="flex min-h-full items-center justify-center p-[1rem] text-center sm:p-0">
+    <div class="flex min-h-full items-center justify-center p-[1rem] sm:p-0">
       <div
         class="people-modal__dialog relative w-full max-w-[900px] transform md:max-w-[732px] lg:max-w-[832px] xl:max-w-[1024px] 2xl:max-w-[1389px]"
         @click.stop
@@ -81,7 +81,7 @@
                   <div class="people-modal__info [&>*:last-child]:!mb-0">
                     <h2 class="people-modal__name" x-text="modalData.name"></h2>
                     <p class="people-modal__position" x-text="modalData.position"></p>
-                    <div class="people-modal__description [&>*:last-child]:!mb-0" x-html="modalData.description"></div>
+                    <div class="people-modal__description prose" x-html="modalData.description"></div>
                   </div>
                 </div>
               </div>

@@ -58,12 +58,30 @@
       background-color: var(--color-primary);
     }
   </style>
+  @vite('modules/wp-module-people/resources/scripts/people.js')
+
   <script>
     document.addEventListener('alpine:init', () => {
       Alpine.data('peopleSlider', () => ({
         swiper: null,
         init() {
-          if (!window.Swiper || !window.SwiperModules) return;
+          // Swiper arrives from resources/scripts/people.js, which loads
+          // after Alpine has already started (app.js is in <head>).
+          if (window.Swiper && window.SwiperModules) {
+            this.buildSwiper();
+            return;
+          }
+
+          document.addEventListener(
+            'people:swiper-ready',
+            () => this.buildSwiper(),
+            { once: true }
+          );
+        },
+        buildSwiper() {
+          // The element carries x-init="init()" and Alpine calls init()
+          // itself, so guard against building twice.
+          if (this.swiper) return;
 
           const container = this.$el;
 

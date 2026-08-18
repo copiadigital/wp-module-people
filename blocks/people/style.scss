@@ -1,0 +1,25 @@
+.wp-block-theme-people {
+  &__nav-link.is-active {
+    @apply border-primary;
+  }
+
+  &__bio[hidden],
+  &__photo[hidden],
+  &__modal[hidden],
+  &__modal-photo[hidden] {
+    display: none;
+  }
+}
+
+// Swiper's stylesheet is injected after the theme CSS, so `.swiper-slide
+// { height: 100% }` outranks Tailwind's `h-auto` and slides never stretch to
+// a common height. Scoped to the block so it beats the single-class rule.
+.wp-block-theme-people--slider {
+  .swiper-wrapper {
+    align-items: stretch;
+  }
+
+  .swiper-slide {
+    height: auto;
+  }
+}

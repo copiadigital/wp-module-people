@@ -3,7 +3,6 @@
 namespace People\Providers;
 
 use Illuminate\Support\Facades\View;
-use People\Fields\People as PeopleField;
 use People\Fields\Partials\People as PeopleBuilderField;
 use People\View\Composers\People as PeopleComposer;
 use People\View\Composers\PeopleSingle;
@@ -16,16 +15,11 @@ class PeopleServiceProvider implements Provider
         return [
             RegisterAssets::class,
             RegisterPostType::class,
+            RegisterMeta::class,
+            BlockEditorSupport::class,
             PeopleOrder::class,
             PeopleSettings::class,
         ];
-    }
-
-    protected function registerFields()
-    {
-        $composer = app(AcfComposer::class);
-        $people = new PeopleField($composer);
-        $people->compose();
     }
 
     protected function registerLayouts()
@@ -62,7 +56,6 @@ class PeopleServiceProvider implements Provider
             (new $service)->register();
         }
 
-        $this->registerFields();
         $this->registerLayouts();
     }
 

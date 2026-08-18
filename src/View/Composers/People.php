@@ -2,6 +2,7 @@
 
 namespace People\View\Composers;
 use Roots\Acorn\View\Composer;
+use People\Support\PersonData;
 use WP_Query;
 
 class People extends Composer
@@ -54,114 +55,95 @@ class People extends Composer
 
     private function getPeoples(): array
     {
-        global $post;
-        $peoples = [];
+        if ($this->getPartialData('style') === 'slider') {
+            return $this->getSliderPeoples();
+        }
 
-        if ($this->getPartialData('style') !== 'slider') {
-            $args = [
-                'post_type'      => 'people',
-                'posts_per_page' => -1,
-                'post_status'    => 'publish',
-            ];
+        $query = new WP_Query([
+            'post_type'      => 'people',
+            'posts_per_page' => -1,
+            'post_status'    => 'publish',
+        ]);
 
-            $query = new WP_Query($args);
+        if (!$query->have_posts()) {
+            return [];
+        }
 
-            if ($query->have_posts()) {
-                $unsorted = [];
+        // One row per person *per group* — the tabs/grid layouts render the
+        // same person under each group they belong to.
+        $unsorted = [];
 
-                while ($query->have_posts()) {
-                    $query->the_post();
-
-                    $person_teams = wp_get_post_terms($post->ID, 'people_group');
-
-                    foreach ($person_teams as $team) {
-                        $unsorted[] = [
-                            'ID'           => get_the_ID(),
-                            'slug'         => $post->post_name . '-' . $team->slug,
-                            'title'        => get_the_title(),
-                            'position'     => get_field('position'),
-                            'descriptions' => get_field('descriptions'),
-                            'photo'        => get_field('photo'),
-                            'teams'        => $team->slug,
-                            'team_id'      => $team->term_id,
-                            'link'         => get_permalink(),
-                        ];
-                    }
-                }
-
-                wp_reset_postdata();
-
-                // Sort by group-specific people_post_order
-                $sorted = [];
-                $groups = get_terms([
-                    'taxonomy' => 'people_group',
-                    'hide_empty' => false,
-                ]);
-
-                foreach ($groups as $group) {
-                    $order = get_term_meta($group->term_id, 'people_post_order', true);
-                    if (!is_array($order)) $order = [];
-
-                    foreach ($order as $person_id) {
-                        foreach ($unsorted as $index => $person) {
-                            // Match person ID AND the group
-                            if ($person['ID'] === $person_id && $person['team_id'] === $group->term_id) {
-                                $sorted[] = $person;
-                                unset($unsorted[$index]); // remove to avoid duplicates
-                            }
-                        }
-                    }
-                }
-
-                // Add any remaining people (not ordered)
-                foreach ($unsorted as $person) {
-                    $sorted[] = $person;
-                }
-
-                $peoples = $sorted;
+        foreach ($query->posts as $person) {
+            foreach (wp_get_post_terms($person->ID, 'people_group') as $team) {
+                $unsorted[] = PersonData::summary($person->ID) + [
+                    'slug'    => $person->post_name . '-' . $team->slug,
+                    'teams'   => $team->slug,
+                    'team_id' => $team->term_id,
+                ];
             }
-        }else {
-            $getPeoplesBased = $this->getPartialData('show_people_based_on');
+        }
 
-            if($getPeoplesBased === 'manual_posts') {
-                foreach($this->getPartialData('manual_posts') as $item) {
-                    $peoples[] = [
-                        'title'        => get_the_title($item->ID),
-                        'position'     => get_field('position', $item->ID),
-                        'descriptions' => get_field('descriptions', $item->ID),
-                        'photo'        => get_field('photo', $item->ID),
-                        'link'         => get_permalink($item->ID),
-                    ];
-                }
-            }else {
-                $args = array(
-                    'post_type' => 'people',
-                    'posts_per_page' => -1,
-                    'post_status' => 'publish',
-                );
+        return $this->sortByGroupOrder($unsorted);
+    }
 
-                $query = new WP_Query($args);
-                if ($query->have_posts()) {
-                    while ($query->have_posts()) {
-                        $query->the_post();
+    /**
+     * Apply each group's manually curated `people_post_order`, then append
+     * anything that group's ordering doesn't mention.
+     */
+    private function sortByGroupOrder(array $unsorted): array
+    {
+        $sorted = [];
 
-                        $peoples[] = [
-                            'title'        => get_the_title(),
-                            'position'     => get_field('position'),
-                            'descriptions' => get_field('descriptions'),
-                            'photo'        => get_field('photo'),
-                            'link'         => get_permalink(),
-                        ];
+        $groups = get_terms([
+            'taxonomy'   => 'people_group',
+            'hide_empty' => false,
+        ]);
+
+        foreach ($groups as $group) {
+            $order = get_term_meta($group->term_id, 'people_post_order', true);
+
+            if (!is_array($order)) {
+                continue;
+            }
+
+            foreach ($order as $person_id) {
+                foreach ($unsorted as $index => $person) {
+                    if ($person['ID'] === $person_id && $person['team_id'] === $group->term_id) {
+                        $sorted[] = $person;
+                        unset($unsorted[$index]);
                     }
-
-                    wp_reset_postdata();
                 }
             }
         }
 
-        return $peoples;
+        foreach ($unsorted as $person) {
+            $sorted[] = $person;
+        }
+
+        return $sorted;
     }
 
+    private function getSliderPeoples(): array
+    {
+        if ($this->getPartialData('show_people_based_on') === 'manual_posts') {
+            // Still an ACF relationship field on the page builder layout, so
+            // this hands back WP_Post objects.
+            $manual = $this->getPartialData('manual_posts') ?: [];
+
+            return array_map(fn($item) => PersonData::summary($item->ID), $manual);
+        }
+
+        $query = new WP_Query([
+            'post_type'      => 'people',
+            'posts_per_page' => -1,
+            'post_status'    => 'publish',
+        ]);
+
+        return array_map(
+            fn($id) => PersonData::summary($id),
+            wp_list_pluck($query->posts, 'ID')
+        );
+    }
 
     /**
      * Allows you to get variables that would already be present in the partial
